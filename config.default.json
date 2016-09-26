@@ -1,0 +1,21 @@
+{
+  "destination": "/tmp",
+  "strict": true,
+  "trackers":{
+    "HDOnly": {
+      "enabled": true,
+      "username": "username",
+      "password": "password"
+    },
+    "ABN": {
+      "enabled": false,
+      "username": "username",
+      "password": "password"
+    },
+    "T411": {
+      "enabled": false,
+      "username": "username",
+      "password": "password"
+    }
+  }
+}

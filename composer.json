@@ -1,0 +1,22 @@
+{
+    "name": "thcolin/torrent-djinn",
+    "authors": [
+        {
+            "name": "thcolin",
+            "email": "th.colin3@gmail.com"
+        }
+    ],
+    "require": {
+        "thcolin/senscritique-api": "dev-master",
+        "jyggen/curl": "~3.0",
+        "thcolin/scene-release-parser": "dev-master",
+        "symfony/console": "~3.0",
+        "symfony/framework-bundle": "~3.0",
+        "imangazaliev/didom": "^1.7"
+    },
+    "autoload": {
+      "psr-4": {
+        "thcolin\\TorrentDjinn\\": "src"
+      }
+    }
+}

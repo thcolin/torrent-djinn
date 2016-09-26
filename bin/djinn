@@ -1,0 +1,20 @@
+#!/usr/local/bin/php
+<?php
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+use Symfony\Component\Console\Application as Console;
+use thcolin\TorrentDjinn\Commands\ConfigCommand;
+use thcolin\TorrentDjinn\Commands\TorrentCommand;
+use thcolin\TorrentDjinn\Commands\SensCritiqueCommand;
+
+define('__CONFIG_FILE__', __DIR__.'/../config.json');
+define('__SAVE_FILE__', __DIR__.'/../tmp/save.json');
+
+$console = new Console();
+$console->add(new TorrentCommand());
+$console->add(new SensCritiqueCommand());
+$console->add(new ConfigCommand());
+$console -> run();
+
+?>
