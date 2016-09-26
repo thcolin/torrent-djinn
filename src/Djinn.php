@@ -3,7 +3,7 @@
 namespace thcolin\TorrentDjinn;
 
 use InvalidArgumentException;
-use thcolin\SensCritiqueAPI\Exceptions\JSONUnvalidException;
+use thcolin\TorrentDjinn\Exceptions\JSONUnvalidException;
 use thcolin\TorrentDjinn\Exceptions\LoginException;
 
 class Djinn{
@@ -20,7 +20,7 @@ class Djinn{
     $this->config = json_decode($raw, true);
 
     if(!$this->config){
-      throw new JSONUnvalidException();
+      throw new JSONUnvalidException("Error in JSON config file (check the config.default.json) : ".$path."");
     }
 
     if(!is_dir($this->config['destination'])){

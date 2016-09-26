@@ -3,7 +3,7 @@
   "strict": true,
   "trackers":{
     "HDOnly": {
-      "enabled": true,
+      "enabled": false,
       "username": "username",
       "password": "password"
     },

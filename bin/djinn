@@ -8,8 +8,22 @@ use thcolin\TorrentDjinn\Commands\ConfigCommand;
 use thcolin\TorrentDjinn\Commands\TorrentCommand;
 use thcolin\TorrentDjinn\Commands\SensCritiqueCommand;
 
+define('__CONFIG_DEFAULT_FILE__', __DIR__.'/../config.default.json');
 define('__CONFIG_FILE__', __DIR__.'/../config.json');
 define('__SAVE_FILE__', __DIR__.'/../tmp/save.json');
+define('__TMP__', __DIR__.'/../tmp');
+
+if(!is_file(__CONFIG_FILE__)){
+  copy(__CONFIG_DEFAULT_FILE__, __CONFIG_FILE__);
+}
+
+if(!is_dir(__TMP__)){
+  mkdir(__TMP__);
+}
+
+if(!is_file(__SAVE_FILE__)){
+  file_put_contents(__SAVE_FILE__, json_encode([]));
+}
 
 $console = new Console();
 $console->add(new TorrentCommand());
