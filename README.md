@@ -1,5 +1,7 @@
 # Torrent Djinn
 
+![torrent-djinn](http://i.imgur.com/ZurEmq9.png)
+
 PHP console application allowing you to search torrents on various trackers and filters them easily. Currently supporting only 3 french trackers : ABN, HDOnly & T411.
 
 ## Installation
@@ -133,3 +135,6 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Add an option to override temporarily the destination config
 * Show connection tries on trackers
 * Suggest to disable trackers after X failed connection tries
+
+## Thanks
+* [Icons8](https://icons8.com/) for Djinn icon !
