@@ -1,6 +1,7 @@
 # Torrent Djinn
 
-![torrent-djinn](http://i.imgur.com/ZurEmq9.png)
+![torrent-djinn-logo](http://i.imgur.com/ZurEmq9.png)
+![torrent-djinn-cli](http://i.imgur.com/4Us2D74.png)
 
 PHP console application allowing you to search torrents on various trackers and filters them easily. Currently supporting only 3 french trackers : ABN, HDOnly & T411.
 
