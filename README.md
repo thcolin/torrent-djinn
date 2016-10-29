@@ -86,9 +86,10 @@ Torrents are dowloaded to configured destination
 During the search, you can make some actions :
 ```
   [3] edit // edit search terms
-  [4] order // re-order results
-  [5] filters // filters results
-  [6] cancel
+  [4] display // edit display mode (full/soft)
+  [5] order // re-order results
+  [6] filters // filters results
+  [7] cancel
 ```
 
 ### SensCritique
@@ -136,6 +137,12 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Add an option to override temporarily the destination config
 * Show connection tries on trackers
 * Suggest to disable trackers after X failed connection tries
+* Add relevance order (calculate a score : similar_text fn + seeders)
+* Check [Kevin Deisz's good practices](http://eng.localytics.com/exploring-cli-best-practices/) on CLI app
+
+## Bugs
+* You can't download a torrent with a "/" in his name
+* Configuration command for "destination" doesn't work (set null)
 
 ## Thanks
 * [Icons8](https://icons8.com/) for Djinn icon !

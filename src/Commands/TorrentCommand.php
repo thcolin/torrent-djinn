@@ -13,6 +13,9 @@ use Symfony\Component\Console\Question\Question;
 
 class TorrentCommand extends CommandAbstract{
 
+  const DISPLAY_SOFT = 'soft';
+  const DISPLAY_FULL = 'full';
+
   protected function configure(){
     $this
       ->setName('torrent')
@@ -20,6 +23,7 @@ class TorrentCommand extends CommandAbstract{
       ->addArgument('search', InputArgument::OPTIONAL, 'Search terms')
 
       ->addOption('soft', null, InputOption::VALUE_NONE, "Don't show me the djinn !")
+      ->addOption('display', null, InputOption::VALUE_REQUIRED, 'Display mode (soft or full), if full : show torrent name first', self::DISPLAY_SOFT)
       ->addOption('order', null, InputOption::VALUE_REQUIRED, 'Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : parameter:order', 'seeders:desc')
       ->addOption('strict', null, InputOption::VALUE_REQUIRED, "Filter the search with or without the strict mode", null)
 
@@ -40,6 +44,7 @@ class TorrentCommand extends CommandAbstract{
       $this->hello();
     }
 
+    $display = $input->getOption('display');
     $order = $input->getOption('order');
     $filters = $this->getFilters();
 
@@ -71,12 +76,16 @@ class TorrentCommand extends CommandAbstract{
         'filters' => $filters
       ]);
 
-      $answer = $this->results($torrents);
+      $answer = $this->results($torrents, $display);
 
       switch($answer){
         case 'edit':
           $search = $this->search();
           unset($collection);
+        break;
+
+        case 'display':
+          $display = $this->display();
         break;
 
         case 'order':
@@ -102,12 +111,22 @@ class TorrentCommand extends CommandAbstract{
     $output->writeln('Torrent file : <info>'.$selection->getName().'</info> downloaded !');
   }
 
-  private function results($torrents){
+  private function results($torrents, $display = self::DISPLAY_SOFT){
     $choices = [];
 
     foreach($torrents as $torrent){
       $tracker = $torrent->getTracker();
-      $name = ($torrent->getRelease() ? '<info>'.$torrent->getRelease()->getRelease(Release::GENERATED_RELEASE).'</info>':'<fg=red>'.$torrent->getName().'</>');
+
+      switch($display){
+        case self::DISPLAY_SOFT :
+          $name = ($torrent->getRelease() ? '<info>'.$torrent->getRelease()->getRelease(Release::GENERATED_RELEASE).'</info>':'<fg=red>'.$torrent->getName().'</>');
+        break;
+
+        case self::DISPLAY_FULL:
+          $name = '<comment>'.$torrent->getName().'</comment>'.($torrent->getRelease() ? ' - (<info>'.$torrent->getRelease()->getRelease(Release::GENERATED_RELEASE).'</info>)':'');
+        break;
+      }
+
       $size = $torrent->getSize();
       $seeders = $torrent->getSeeders();
       $leechers = $torrent->getLeechers();
@@ -115,23 +134,35 @@ class TorrentCommand extends CommandAbstract{
       $choices[] = '<question>'.$tracker.'</question> - '.$name.' <comment>'.$size.'</comment> <error>('.$seeders.'-'.$leechers.')</error>';
     }
 
-    $choices[] = 'edit';
-    $choices[] = 'order';
-    $choices[] = 'filters';
-    $choices[] = 'cancel';
+    $actions = ['edit', 'display', 'order', 'filters', 'cancel'];
 
     $question = new ChoiceQuestion(
-      (count($choices) == 4 ? 'Select the action you want to do :':'Select the torrent you want to download :'),
-      $choices
+      (!count($choices) ? 'Select the action you want to do :':'Select the torrent you want to download :'),
+      array_merge($choices, $actions)
     );
 
     $answer = $this->getHelper('question')->ask($this->input, $this->output, $question);
 
-    if(!in_array($answer, ['edit', 'order', 'filters', 'cancel'])){
+    if(!in_array($answer, $actions)){
       return $torrents[array_search($answer, $choices)];
     }
 
     return $answer;
+  }
+
+  private function display(){
+    $choices = [
+      self::DISPLAY_FULL => 'TORRENT (RELEASE) - <comment>Alien Anthology 1080p Multi x264 DTS-HD DTS-HD</comment> (<info>Alien.MULTI.1080p.HDRip.x264-NOTEAM</info>)',
+      self::DISPLAY_SOFT => 'RELEASE - <info>Alien.MULTI.1080p.HDRip.x264-NOTEAM</info>'
+    ];
+
+    $question = new ChoiceQuestion(
+      'Select the display mode you want to use :',
+      $choices
+    );
+
+    $this->output->writeln('');
+    return $this->getHelper('question')->ask($this->input, $this->output, $question);
   }
 
   private function order(){
