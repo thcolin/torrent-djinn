@@ -73,7 +73,9 @@ class Djinn{
   public function download(Torrent $torrent){
     $tmp = tempnam('/tmp', time());
     $this->trackers[$torrent->getTracker()]->download($torrent, $tmp);
-    rename($tmp, $this->getDestination().'/'.$torrent->getName().'_'.$torrent->getTracker().'.torrent');
+    $filename = str_replace(['"', "'", '&', '/', '\\', '?', '#'], '_', $torrent->getName().'_'.$torrent->getTracker());
+    $filename = str_replace(' ', '.', $filename);
+    rename($tmp, $this->getDestination().'/'.$filename.'.torrent');
   }
 
   public function save(){

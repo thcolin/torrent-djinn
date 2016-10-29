@@ -141,7 +141,6 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Check [Kevin Deisz's good practices](http://eng.localytics.com/exploring-cli-best-practices/) on CLI app
 
 ## Bugs
-* You can't download a torrent with a "/" in his name
 * Configuration command for "destination" doesn't work (set null)
 
 ## Thanks
