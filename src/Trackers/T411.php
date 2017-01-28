@@ -13,7 +13,7 @@ use Exception;
 
 class T411 extends Tracker{
 
-  const DOMAIN = 'https://api.t411.ch';
+  const DOMAIN = 'https://api.t411.li';
   const COOKIE_FILE = __DIR__.'/../../tmp/t411.cookie';
   const LIMIT = 50;
 
