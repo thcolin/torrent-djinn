@@ -137,6 +137,8 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Add an option to override temporarily the destination config
 * Show connection tries on trackers
 * Suggest to disable trackers after X failed connection tries
+* Merge strict mode as a filter
+* Add ultra-strict mode : hide torrent with a ```Release``` with a score behind X and a relevance beyond X (~10 ?)
 * Add pagination to results
 * Check [Kevin Deisz's good practices](http://eng.localytics.com/exploring-cli-best-practices/) on CLI app
 
