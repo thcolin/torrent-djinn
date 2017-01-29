@@ -82,8 +82,8 @@ class ABN extends Tracker{
 
           $torrent->setUUID($uuid);
           $torrent->setName($td[1]->find('a::text')[0]);
-          $torrent->setSeeders($td[6]->text());
-          $torrent->setLeechers($td[7]->text());
+          $torrent->setSeeders($td[5]->text());
+          $torrent->setLeechers($td[6]->text());
           $torrent->setSize(intval((explode(' ', $td[4]->text())[0] * pow(1024, array_search(explode(' ', $td[4]->text())[1], ['o', 'Ko', 'Mo', 'Go', 'To'])))));
 
           $release = new Release($torrent->getName());
