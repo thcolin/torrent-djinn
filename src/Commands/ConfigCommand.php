@@ -7,9 +7,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Exception\LogicException;
 use thcolin\TorrentDjinn\Djinn;
+use RuntimeException;
 
 class ConfigCommand extends CommandAbstract{
 
@@ -77,6 +77,8 @@ class ConfigCommand extends CommandAbstract{
       if(!is_dir($answer)){
         throw new RuntimeException('Le répertoire "'.$answer.'" n\'existe pas !');
       }
+      
+      return $answer;
     });
 
     return $this->getHelper('question')->ask($this->input, $this->output, $question);

@@ -141,7 +141,7 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Check [Kevin Deisz's good practices](http://eng.localytics.com/exploring-cli-best-practices/) on CLI app
 
 ## Bugs
-* Configuration command for "destination" doesn't work (set null)
+* Up to date ! (Yes, I should use the issues..)
 
 ## Thanks
 * [Icons8](https://icons8.com/) for Djinn icon !
