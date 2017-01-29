@@ -30,10 +30,10 @@ abstract class CommandAbstract extends ContainerAwareCommand{
   protected function hello(){
     switch($this->getName()){
       case 'torrent':
-        $talent = 'You requested my talents for searching torrents on : <fg=green>Trackers</>';
+        $talent = 'You requested my talents for searching torrents on : <fg=cyan>Trackers</>';
       break;
       case 'senscritique':
-        $talent = 'You requested my talents for searching artworks on : <fg=green>SensCritique</>';
+        $talent = 'You requested my talents for searching artworks on : <fg=cyan>SensCritique</>';
       break;
       default:
         $talent = 'You requested my talents to <fg=green>configure</> myself !';
@@ -47,9 +47,9 @@ abstract class CommandAbstract extends ContainerAwareCommand{
                 <fg=red>:</><fg=blue>?????</><fg=blue>:</>                 ".$talent."
                 <fg=blue>,?????,</>
                 <fg=blue>,?????,</>                 By the way, I'm configured like this :
-           <fg=blue>:???=~,,,,,~=???=</>              -- The torrents will be downloaded to : <fg=cyan>".$this->djinn->getDestination()."</>
-       <fg=blue>+????++++++????+===+?????</>          -- I'll filter the results with".($this->djinn->getStrict() ? '':'out')." the strict mode : <fg=yellow>".($this->djinn->getStrict() ? "you only see torrents with a correct scene release name":"you see all the torrents")."</>
-     <fg=blue>????????++++?????????????????</>        -- And I can search on all these trackers : <fg=green>".implode(', ', array_keys($this->djinn->getTrackers()))."</>
+           <fg=blue>:???=~,,,,,~=???=</>              -- The torrents will be downloaded to : <fg=yellow>".$this->djinn->getDestination()."</>
+       <fg=blue>+????++++++????+===+?????</>          -- And I can search on all these trackers : <fg=magenta>".implode(', ', array_keys($this->djinn->getTrackers()))."</>
+     <fg=blue>????????++++?????????????????</>
     <fg=blue>??????????????=++??????????????</>
      <fg=blue>???????????==???=????????????</>
         <fg=blue>=???===+???????===+???~</>
@@ -74,10 +74,24 @@ abstract class CommandAbstract extends ContainerAwareCommand{
       $this->output->writeln("The results are from : <fg=cyan>".implode(', ', $content['filters']['trackers']).'</>');
     }
 
-    $this->output->writeln("I've ordered the results by : <fg=yellow>".$content['order'].'</>');
+    $this->output->writeln("I've ordered the results by : <fg=magenta>".$content['order'].'</>');
+
+    switch($content['policy']){
+      case 'flexible':
+        $policy = 'you see all the torrents';
+      break;
+      case 'moderate':
+        $policy = 'you only see torrents with a correct scene release name';
+      break;
+      case 'strict':
+        $policy = 'you only see quality torrents, and those too far from your search are ignored';
+      break;
+    }
+
+    $this->output->writeln("And I've applied the <fg=yellow>".$content['policy']."</> policy : <fg=yellow>".$policy.'</>');
 
     if(count($content['filters'])){
-      $this->output->writeln('With the filters : '.implode(', ', array_map(function($v, $k){ return '<fg=magenta>--'.$k.'='.(is_array($v) ? implode(',', $v):$v).'</>'; }, $content['filters'], array_keys($content['filters']))));
+      $this->output->writeln('With the filters : '.implode(', ', array_map(function($v, $k){ return '<fg=green>--'.$k.'='.(is_array($v) ? implode(',', $v):$v).'</>'; }, $content['filters'], array_keys($content['filters']))));
     }
 
     if($ln){

@@ -5,16 +5,36 @@ namespace thcolin\TorrentDjinn;
 class TorrentCollection{
   public $torrents = [];
 
-  public function filter($strict = false, $filters = [], $order = 'seeders:desc'){
+  public function filter($q, $policy = 'flexible', $filters = [], $order = 'seeders:desc'){
     $torrents = [];
 
-    $torrents = array_filter($this->torrents, function($torrent) use($strict, $filters){
-      if($strict && (!$torrent->getRelease() || !$torrent->getRelease()->getTitle())){
-        return false;
-      } else if(!$filters){
-        return true;
+    $torrents = array_filter($this->torrents, function($torrent) use($q, $policy, $filters){
+      // policy
+      switch($policy){
+        case 'flexible':
+          // dumb
+        break;
+        case 'moderate':
+          if(!$torrent->getRelease()){
+            return false;
+          } else if(!$torrent->getRelease()->getTitle()){
+            return false;
+          }
+        break;
+        case 'strict':
+          if(!$torrent->getRelease()){
+            return false;
+          } else if(!$torrent->getRelease()->getTitle()){
+            return false;
+          } else if($torrent->getRelease()->getScore() < 6){
+            return false;
+          } else if($torrent->getRelevance() >= (strlen($q) * 2)){
+            return false;
+          }
+        break;
       }
 
+      // filters
       $bool = 1;
 
       foreach($filters as $filter => $value){

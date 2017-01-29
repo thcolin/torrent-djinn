@@ -1985,12 +1985,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/thcolin/scene-release-parser.git",
-                "reference": "ed9d4367ba5de4d295970f2588cc76e6800b73ae"
+                "reference": "5133f3f9ada520533f9029037d7d0298a9808cab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thcolin/scene-release-parser/zipball/ed9d4367ba5de4d295970f2588cc76e6800b73ae",
-                "reference": "ed9d4367ba5de4d295970f2588cc76e6800b73ae",
+                "url": "https://api.github.com/repos/thcolin/scene-release-parser/zipball/5133f3f9ada520533f9029037d7d0298a9808cab",
+                "reference": "5133f3f9ada520533f9029037d7d0298a9808cab",
                 "shasum": ""
             },
             "require": {
@@ -2012,7 +2012,7 @@
                     "email": "th.colin3@gmail.com"
                 }
             ],
-            "time": "2016-07-02 19:06:07"
+            "time": "2017-01-29 19:15:33"
         },
         {
             "name": "thcolin/senscritique-api",

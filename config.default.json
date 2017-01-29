@@ -1,6 +1,5 @@
 {
   "destination": "/tmp",
-  "strict": true,
   "trackers":{
     "ABN": {
       "enabled": false,

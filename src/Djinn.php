@@ -29,7 +29,6 @@ class Djinn{
 
     // config
     $this->setDestination($this->config['destination']);
-    $this->setStrict(isset($this->config['strict']) ? $this->config['strict']:true);
 
     // trackers
     foreach($this->config['trackers'] as $tracker => $options){
@@ -74,12 +73,16 @@ class Djinn{
 
   private function relevance($q, Torrent $torrent){
     $title = ($torrent->getRelease() ? $torrent->getRelease()->getTitle():$torrent->getName());
-    $seeders = $torrent->getSeeders();
 
-    $lev = levenshtein($q, $title);
-    $relevance = $lev + ($seeders / 1000);
+    $relevance = levenshtein($q, $title, 2, 2, 1);
 
-    return $lev;
+    foreach(explode(' ', $title) as $word){
+      $relevance -= (preg_match('#'.preg_quote($word).'#', $q) ? strlen($word):0);
+    }
+
+    $relevance -= ($torrent->getSeeders()/1000);
+
+    return $relevance;
   }
 
   public function download(Torrent $torrent){
@@ -111,14 +114,6 @@ class Djinn{
 
   public function getTrackers(){
     return $this->trackers;
-  }
-
-  public function getStrict(){
-    return $this->strict;
-  }
-
-  public function setStrict($strict){
-    $this->strict = $strict;
   }
 
 }

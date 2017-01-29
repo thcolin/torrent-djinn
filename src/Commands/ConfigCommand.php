@@ -33,11 +33,6 @@ class ConfigCommand extends CommandAbstract{
           $this->djinn->config['destination'] = $destination;
         break;
 
-        case 'mode':
-          $strict = $this->strict();
-          $this->djinn->config['strict'] = $strict;
-        break;
-
         case 'tks':
           $trackers = $this->trackers($this->djinn->config['trackers']);
           $this->djinn->config['trackers'] = $trackers;
@@ -58,7 +53,6 @@ class ConfigCommand extends CommandAbstract{
       'Which parameter do you want to configure :',
       [
         'dest' => $context['destination'],
-        'mode' => ($context['strict'] ? 'Strict':'Permissive'),
         'tks' => implode(',', array_keys($context['trackers'])),
         'done' => '<fg=yellow>done</>'
       ]
@@ -77,17 +71,10 @@ class ConfigCommand extends CommandAbstract{
       if(!is_dir($answer)){
         throw new RuntimeException('Le répertoire "'.$answer.'" n\'existe pas !');
       }
-      
+
       return $answer;
     });
 
-    return $this->getHelper('question')->ask($this->input, $this->output, $question);
-  }
-
-  private function strict(){
-    $this->output->writeln('');
-    $this->output->writeln('<comment>With the strict mode, you\'ll only see torrents with a correct scene release name</comment>');
-    $question = new ConfirmationQuestion('<question>Enable strict mode ?</question> [<info>Y</info>/<comment>n</comment>] ', true);
     return $this->getHelper('question')->ask($this->input, $this->output, $question);
   }
 

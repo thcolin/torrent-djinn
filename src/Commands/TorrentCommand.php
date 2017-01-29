@@ -25,7 +25,7 @@ class TorrentCommand extends CommandAbstract{
       ->addOption('soft', null, InputOption::VALUE_NONE, "Don't show me the djinn !")
       ->addOption('display', null, InputOption::VALUE_REQUIRED, 'Display mode (soft or full), if full : show torrent name first', self::DISPLAY_SOFT)
       ->addOption('order', null, InputOption::VALUE_REQUIRED, 'Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : parameter:order', 'relevance:asc')
-      ->addOption('strict', null, InputOption::VALUE_REQUIRED, "Filter the search with or without the strict mode", null)
+      ->addOption('policy', null, InputOption::VALUE_REQUIRED, "Policy to apply (flexible, moderate or strict)", 'strict')
 
       ->addOption('filter-tracker', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter the search by tracker (ABN, HDOnly, T411...)')
       ->addOption('filter-type', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter the search by the media type (movie, tvshow)')
@@ -45,6 +45,7 @@ class TorrentCommand extends CommandAbstract{
     }
 
     $display = $input->getOption('display');
+    $policy = $input->getOption('policy');
     $order = $input->getOption('order');
     $filters = $this->getFilters();
 
@@ -56,10 +57,6 @@ class TorrentCommand extends CommandAbstract{
       $search = $this->ask(CommandAbstract::ASK_SEARCH);
     }
 
-    if($strict = $input->getOption('strict') != null){
-      $this->djinn->setStrict($strict != 'false');
-    }
-
     do{
       $selection = null;
 
@@ -67,13 +64,14 @@ class TorrentCommand extends CommandAbstract{
         $collection = $this->djinn->search($search, $filters['tracker']);
       }
 
-      $torrents = $collection->filter($this->djinn->getStrict(), $filters, $order);
+      $torrents = $collection->filter($search, $policy, $filters, $order);
 
       $this->resume([
         'search' => $search,
         'results' => $torrents,
-        'order' => $order,
-        'filters' => $filters
+        'policy' => $policy,
+        'filters' => $filters,
+        'order' => $order
       ]);
 
       $answer = $this->results($torrents, $display);
@@ -90,6 +88,10 @@ class TorrentCommand extends CommandAbstract{
 
         case 'order':
           $order = $this->order();
+        break;
+
+        case 'policy':
+          $policy = $this->policy();
         break;
 
         case 'filters':
@@ -134,7 +136,7 @@ class TorrentCommand extends CommandAbstract{
       $choices[] = '<question>'.$tracker.'</question> - '.$name.' <comment>'.$size.'</comment> <error>('.$seeders.'-'.$leechers.')</error>';
     }
 
-    $actions = ['edit', 'display', 'order', 'filters', 'cancel'];
+    $actions = ['edit', 'display', 'order', 'policy', 'filters', 'cancel'];
 
     $question = new ChoiceQuestion(
       (!count($choices) ? 'Select the action you want to do :':'Select the torrent you want to download :'),
@@ -185,6 +187,23 @@ class TorrentCommand extends CommandAbstract{
     $way = $this->getHelper('question')->ask($this->input, $this->output, $question);
 
     return $column.':'.$way;
+  }
+
+  private function policy(){
+    // column
+    $question = new ChoiceQuestion(
+      'Select the policy you want to apply :',
+      [
+        'flexible' => 'you see all the torrents',
+        'moderate' => 'you only see torrents with a correct scene release name',
+        'strict' => 'you only see quality torrents, and those too far from your search are ignored'
+      ]
+    );
+
+    $this->output->writeln('');
+    $policy = $this->getHelper('question')->ask($this->input, $this->output, $question);
+
+    return $policy;
   }
 
   private function filters($context){

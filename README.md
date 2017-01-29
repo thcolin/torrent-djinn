@@ -54,8 +54,11 @@ Launch a torrent search with the command ```torrent``` and a ```search``` argume
 
 The command have some options :
 - ```--soft``` : Don't show me the djinn !
-- ```--order``` : Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : parameter:order
-- ```--strict``` : Filter the search with or without the strict mode (override config temporarily), use : ```--strict=[true|false]```
+- ```--order``` : Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : ```parameter:order```
+- ```--policy``` : Apply a policy for your search : ```--policy=[flexible|moderate|strict]```
+  - ```flexible``` : You see all the torrents
+  - ```moderate``` : You only see torrents with a correct scene release name
+  - ```strict``` : You only see quality torrents, and those too far from your search are ignored
 
 And also some filters :
 - ```--filter-tracker``` : Filter the search by tracker (ABN, HDOnly, T411...) (override config temporarily)
@@ -88,8 +91,9 @@ During the search, you can make some actions :
   [3] edit // edit search terms
   [4] display // edit display mode (full/soft)
   [5] order // re-order results
-  [6] filters // filters results
-  [7] cancel
+  [6] policy // redefine policy (flexible/moderate/strict)
+  [7] filters // filters results
+  [8] cancel
 ```
 
 ### SensCritique
@@ -101,7 +105,7 @@ With the senscritique command, you can check the collection and the lists of a S
 Same as torrent command, this one got options too :
 - ```--soft``` : Don't show me the djinn !
 - ```--order``` : Order the search by the last time action (asc, desc)
-- ```--anonymous``` : You will see all the movies or tv shows (including those you already downloaded)
+- ```--anonymous``` : You will see all the movies or tv shows (including those you already downloaded with this djinn)
 
 And also some filters :
 - ```--filter-type``` : Filter the search by the media type (movie, tvshow)
@@ -137,8 +141,6 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Add an option to override temporarily the destination config
 * Show connection tries on trackers
 * Suggest to disable trackers after X failed connection tries
-* Merge strict mode as a filter
-* Add ultra-strict mode : hide torrent with a ```Release``` with a score behind X and a relevance beyond X (~10 ?)
 * Add pagination to results
 * Check [Kevin Deisz's good practices](http://eng.localytics.com/exploring-cli-best-practices/) on CLI app
 
