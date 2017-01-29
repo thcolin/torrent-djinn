@@ -137,7 +137,7 @@ If yes, you will be redirected to torrent command with the title of the artwork 
 * Add an option to override temporarily the destination config
 * Show connection tries on trackers
 * Suggest to disable trackers after X failed connection tries
-* Add relevance order (calculate a score : similar_text fn + seeders)
+* Add pagination to results
 * Check [Kevin Deisz's good practices](http://eng.localytics.com/exploring-cli-best-practices/) on CLI app
 
 ## Bugs

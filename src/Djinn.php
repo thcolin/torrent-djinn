@@ -61,12 +61,26 @@ class Djinn{
       if(!$trackers || in_array($key, $trackers)){
         $search = $tracker->search($q);
         foreach($search->torrents as $torrent){
+          $relevance = $this->relevance($q, $torrent);
+          $torrent->setRelevance($relevance);
+
           $collection->torrents[] = $torrent;
         }
       }
     }
 
     return $collection;
+  }
+
+  private function relevance($q, Torrent $torrent){
+    $title = ($torrent->getRelease() ? $torrent->getRelease()->getTitle():$torrent->getName());
+    $seeders = $torrent->getSeeders();
+
+    $lev = levenshtein($q, $title);
+    $relevance = $lev + ($seeders / 1000);
+    echo $q.' - '.$torrent->getName().' - '.$title.' - '.' = '.$relevance."\n";
+
+    return $lev;
   }
 
   public function download(Torrent $torrent){

@@ -24,7 +24,7 @@ class TorrentCommand extends CommandAbstract{
 
       ->addOption('soft', null, InputOption::VALUE_NONE, "Don't show me the djinn !")
       ->addOption('display', null, InputOption::VALUE_REQUIRED, 'Display mode (soft or full), if full : show torrent name first', self::DISPLAY_SOFT)
-      ->addOption('order', null, InputOption::VALUE_REQUIRED, 'Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : parameter:order', 'seeders:desc')
+      ->addOption('order', null, InputOption::VALUE_REQUIRED, 'Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : parameter:order', 'relevance:asc')
       ->addOption('strict', null, InputOption::VALUE_REQUIRED, "Filter the search with or without the strict mode", null)
 
       ->addOption('filter-tracker', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter the search by tracker (ABN, HDOnly, T411...)')
@@ -169,7 +169,7 @@ class TorrentCommand extends CommandAbstract{
     // column
     $question = new ChoiceQuestion(
       'Select the column you want to use :',
-      ['seeders', 'leechers', 'size']
+      ['relevance', 'seeders', 'leechers', 'size']
     );
 
     $this->output->writeln('');

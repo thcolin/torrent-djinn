@@ -74,6 +74,14 @@ class Torrent{
     $this->size = intval($size);
   }
 
+  public function getRelevance(){
+    return $this->relevance;
+  }
+
+  public function setRelevance($relevance){
+    $this->relevance = floatval($relevance);
+  }
+
 }
 
 ?>

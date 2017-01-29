@@ -9,7 +9,7 @@ class TorrentCollection{
     $torrents = [];
 
     $torrents = array_filter($this->torrents, function($torrent) use($strict, $filters){
-      if($strict && !$torrent->getRelease()){
+      if($strict && (!$torrent->getRelease() || !$torrent->getRelease()->getTitle())){
         return false;
       } else if(!$filters){
         return true;
@@ -38,10 +38,10 @@ class TorrentCollection{
       return $bool;
     });
 
-    // default: order by seeders:desc
+    // default: order by relevance:desc
     list($param, $order) = explode(':', $order);
     usort($torrents, function($a, $b) use ($param, $order){
-      $function = method_exists($a, 'get'.ucfirst($param)) ? 'get'.ucfirst($param):'getSeeders';
+      $function = method_exists($a, 'get'.ucfirst($param)) ? 'get'.ucfirst($param):'getRelevance';
 
       $ra = $a->$function(false);
       $rb = $b->$function(false);
