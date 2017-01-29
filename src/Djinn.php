@@ -78,7 +78,6 @@ class Djinn{
 
     $lev = levenshtein($q, $title);
     $relevance = $lev + ($seeders / 1000);
-    echo $q.' - '.$torrent->getName().' - '.$title.' - '.' = '.$relevance."\n";
 
     return $lev;
   }
