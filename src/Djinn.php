@@ -52,7 +52,7 @@ class Djinn{
     }
   }
 
-  public function search($q, $trackers = null, $strict = true, $filters = null, $order = null){
+  public function search($q, $trackers = null){
     $collection = new TorrentCollection();
 
     $trackers = (is_array($trackers) ? $trackers:(is_string($trackers) ? [$trackers]:[]));
@@ -67,7 +67,6 @@ class Djinn{
     }
 
     return $collection;
-    return $collection->filter($filters ? $filters:$strict, $order);
   }
 
   public function download(Torrent $torrent){

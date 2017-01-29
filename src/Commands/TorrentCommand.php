@@ -64,7 +64,7 @@ class TorrentCommand extends CommandAbstract{
       $selection = null;
 
       if(!isset($collection)){
-        $collection = $this->djinn->search($search, $filters['tracker'], $this->djinn->strict, $filters, $order);
+        $collection = $this->djinn->search($search, $filters['tracker']);
       }
 
       $torrents = $collection->filter($this->djinn->getStrict(), $filters, $order);
