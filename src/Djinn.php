@@ -104,7 +104,10 @@ class Djinn{
   public function setDestination($destination){
     if(!is_dir($destination)){
       throw new InvalidArgumentException();
+    } else if(!is_writable($destination)){
+      throw new InvalidArgumentException();
     }
+
     $this->destination = $destination;
 
     foreach($this->trackers as $key => $tracker){
