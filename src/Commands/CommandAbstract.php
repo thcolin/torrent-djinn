@@ -76,19 +76,21 @@ abstract class CommandAbstract extends ContainerAwareCommand{
 
     $this->output->writeln("I've ordered the results by : <fg=magenta>".$content['order'].'</>');
 
-    switch($content['policy']){
-      case 'flexible':
-        $policy = 'you see all the torrents';
-      break;
-      case 'moderate':
-        $policy = 'you only see torrents with a correct scene release name';
-      break;
-      case 'strict':
-        $policy = 'you only see quality torrents, and those too far from your search are ignored';
-      break;
-    }
+    if(isset($content['policy'])){
+      switch($content['policy']){
+        case 'flexible':
+          $policy = 'you see all the torrents';
+        break;
+        case 'moderate':
+          $policy = 'you only see torrents with a correct scene release name';
+        break;
+        case 'strict':
+          $policy = 'you only see quality torrents, and those too far from your search are ignored';
+        break;
+      }
 
-    $this->output->writeln("And I've applied the <fg=yellow>".$content['policy']."</> policy : <fg=yellow>".$policy.'</>');
+      $this->output->writeln("And I've applied the <fg=yellow>".$content['policy']."</> policy : <fg=yellow>".$policy.'</>');
+    }
 
     if(count($content['filters'])){
       $this->output->writeln('With the filters : '.implode(', ', array_map(function($v, $k){ return '<fg=green>--'.$k.'='.(is_array($v) ? implode(',', $v):$v).'</>'; }, $content['filters'], array_keys($content['filters']))));
