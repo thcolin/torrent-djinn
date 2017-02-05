@@ -70,12 +70,12 @@ class Torrent{
       $power = $this->size > 0 ? floor(log($this->size, 1000)):0;
       return number_format($this->size / pow(1000, $power), 2, '.', ',').' '.$units[$power];
     } else{
-      return $this->size;
+      return ($this->size > 0 ? :1);
     }
   }
 
   public function setSize($size){
-    $this->size = intval($size);
+    $this->size = floatval($size);
   }
 
   public function getRelevance(){
