@@ -256,7 +256,7 @@ class TorrentCommand extends CommandAbstract{
 
       switch($option){
         case 'tracker':
-          $trackers = array_keys($this->djinn->getTrackers());
+          $trackers = array_keys($this->djinn->getConfig()->getTrackers());
           $choices = array_combine($trackers, $trackers);
         break;
 
