@@ -64,6 +64,10 @@ class ConfigCommand extends CommandAbstract{
           $this->trackers();
         break;
 
+        case 'clean':
+          $this->clean();
+        break;
+
         case 'done':
         default:
           $done = true;
@@ -78,12 +82,27 @@ class ConfigCommand extends CommandAbstract{
       [
         'dest' => $context['destination'],
         'tks' => $context['trackers'],
+        'clean' => '<fg=yellow>clean</>',
         'done' => '<fg=yellow>done</>'
       ]
     );
 
     $this->output->writeln('');
     return $this->getHelper('question')->ask($this->input, $this->output, $question);
+  }
+
+  private function clean(){
+    $question = new ConfirmationQuestion('<question>Clean all artworks saved as downloaded ?</question> [<info>y</info>/<comment>N</comment>] ', false);
+    $answer = $this->getHelper('question')->ask($this->input, $this->output, $question);
+
+    if($answer){
+      $this->output->writeln('<fg=green>Confirmed</>');
+      file_put_contents(__SAVE_FILE__, json_encode([]));
+    } else{
+      $this->output->writeln('<fg=red>Aborted</>');
+    }
+
+    $this->output->writeln('');
   }
 
   private function destination(){
