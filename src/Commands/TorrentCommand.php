@@ -6,7 +6,11 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use thcolin\TorrentDjinn\Djinn;
+use thcolin\TorrentDjinn\Config;
 use thcolin\TorrentDjinn\Commands\CommandAbstract;
+use thcolin\TorrentDjinn\Exceptions\LoginException;
+use thcolin\TorrentDjinn\Exceptions\JSONUnvalidException;
 use thcolin\SceneReleaseParser\Release;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -26,6 +30,7 @@ class TorrentCommand extends CommandAbstract{
       ->addOption('display', null, InputOption::VALUE_REQUIRED, 'Display mode (soft or full), if full : show torrent name first', self::DISPLAY_SOFT)
       ->addOption('order', null, InputOption::VALUE_REQUIRED, 'Order the search by a parameter (seeders, leechers, size) and order (asc, desc), format : parameter:order', 'relevance:asc')
       ->addOption('policy', null, InputOption::VALUE_REQUIRED, "Policy to apply (flexible, moderate or strict)", 'strict')
+      ->addOption('skip-tests', null, InputOption::VALUE_NONE, "Skip login tests on trackers")
 
       ->addOption('filter-tracker', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter the search by tracker (ABN, HDOnly, T411...)')
       ->addOption('filter-type', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter the search by the media type (movie, tvshow)')
@@ -44,17 +49,40 @@ class TorrentCommand extends CommandAbstract{
       $this->hello();
     }
 
+    $config = Config::unserialize(__CONFIG_FILE__);
+    $this->djinn = new Djinn($config);
+
+    if(!$input->getOption('skip-tests')){
+      foreach($this->djinn->getConfig()->getTrackers() as $key => $tracker){
+        $this->output->write('Trying to connect to <question>'.$key.'</question> : ');
+
+        try{
+          $tracker->test();
+          $this->output->writeln('<fg=green>success</>');
+        } catch(LoginException $e){
+          $tracker->setEnable(false);
+          $this->output->writeln('<fg=red>fail</>');
+        }
+      }
+    }
+
+    $this->output->writeln('');
+
+    if(count($this->djinn->getConfig()->getTrackers()) === 0){
+      throw new JSONUnvalidException('You must provide at least one valid tracker !');
+    }
+
     $display = $input->getOption('display');
     $policy = $input->getOption('policy');
     $order = $input->getOption('order');
     $filters = $this->getFilters();
 
     if(!isset($filters['tracker'])){
-      $filters['tracker'] = array_keys($this->djinn->getTrackers());
+      $filters['tracker'] = array_keys($this->djinn->getConfig()->getTrackers());
     }
 
     if(!$search = $input->getArgument('search')){
-      $search = $this->ask(CommandAbstract::ASK_SEARCH);
+      $search = $this->search();
     }
 
     do{

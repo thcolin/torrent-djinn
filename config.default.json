@@ -2,14 +2,18 @@
   "destination": "/tmp",
   "trackers":{
     "ABN": {
-      "enabled": false,
-      "username": "username",
-      "password": "password"
+      "enable": false,
+      "credentials": {
+        "username": "username",
+        "password": "password"
+      }
     },
     "T411": {
-      "enabled": false,
-      "username": "username",
-      "password": "password"
+      "enable": false,
+      "credentials": {
+        "username": "username",
+        "password": "password"
+      }
     }
   }
 }

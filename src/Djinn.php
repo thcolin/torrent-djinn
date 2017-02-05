@@ -3,52 +3,28 @@
 namespace thcolin\TorrentDjinn;
 
 use InvalidArgumentException;
-use thcolin\TorrentDjinn\Exceptions\JSONUnvalidException;
+use thcolin\TorrentDjinn\Config;
 use thcolin\TorrentDjinn\Exceptions\LoginException;
 
 class Djinn{
 
-  public $trackers = [];
+  protected $config;
 
-  public function __construct($path){
-    if(!is_file($path)){
-      throw new JSONUnvalidException("JSON config file doesn't exist : ".$path);
-    }
+  public function __construct(Config $config){
+    $this->setConfig($config);
+  }
 
-    $this->path = $path;
-    $raw = file_get_contents($this->path);
-    $this->config = json_decode($raw, true);
+  public static function invoke($destination, $trackers){
+    $config = new Config($destination, $trackers);
+    return new Djinn($config);
+  }
 
-    if(!$this->config){
-      throw new JSONUnvalidException("Error in JSON config file (check the config.default.json) : ".$path."");
-    }
+  public function getConfig(){
+    return $this->config;
+  }
 
-    if(!is_dir($this->config['destination'])){
-      throw new InvalidArgumentException("JSON destintation doesn't exist");
-    }
-
-    // config
-    $this->setDestination($this->config['destination']);
-
-    // trackers
-    foreach($this->config['trackers'] as $tracker => $options){
-      $class = 'thcolin\TorrentDjinn\Trackers\\'.$tracker;
-
-      if(isset($options['enabled']) && !$options['enabled']){
-        continue;
-      }
-
-      if(!class_exists($class)){
-        throw new InvalidArgumentException("JSON tracker '".$tracker."' isn't supported");
-      }
-
-      // retry login
-      try{
-        $this->trackers[$tracker] = new $class($options);
-      } catch(LoginException $e){
-        $this->trackers[$tracker] = new $class($options);
-      }
-    }
+  public function setConfig(Config $config){
+    $this->config = $config;
   }
 
   public function search($q, $trackers = null){
@@ -56,13 +32,12 @@ class Djinn{
 
     $trackers = (is_array($trackers) ? $trackers:(is_string($trackers) ? [$trackers]:[]));
 
-    foreach($this->getTrackers() as $key => $tracker){
-      if(!$trackers || in_array($key, $trackers)){
+    foreach($this->config->getTrackers() as $key => $tracker){
+      if(in_array($key, $trackers)){
         $search = $tracker->search($q);
         foreach($search->torrents as $torrent){
           $relevance = $this->relevance($q, $torrent);
           $torrent->setRelevance($relevance);
-
           $collection->torrents[] = $torrent;
         }
       }
@@ -71,12 +46,12 @@ class Djinn{
     return $collection;
   }
 
-  private function relevance($q, Torrent $torrent){
-    $title = ($torrent->getRelease() ? $torrent->getRelease()->getTitle():$torrent->getName());
+  protected function relevance($q, Torrent $torrent){
+    $string = $torrent->getName(true);
 
-    $relevance = levenshtein($q, $title, 2, 2, 1);
+    $relevance = levenshtein($q, $string, 2, 2, 1);
 
-    foreach(explode(' ', $title) as $word){
+    foreach(explode(' ', $string) as $word){
       $relevance -= (preg_match('#'.preg_quote($word).'#', $q) ? strlen($word):0);
     }
 
@@ -87,36 +62,19 @@ class Djinn{
 
   public function download(Torrent $torrent){
     $tmp = tempnam('/tmp', time());
-    $this->trackers[$torrent->getTracker()]->download($torrent, $tmp);
-    $filename = str_replace(['"', "'", '&', '/', '\\', '?', '#'], '_', $torrent->getName().'_'.$torrent->getTracker());
-    $filename = str_replace(' ', '.', $filename);
-    rename($tmp, $this->getDestination().'/'.$filename.'.torrent');
-  }
 
-  public function save(){
-    file_put_contents($this->path, json_encode($this->config, JSON_PRETTY_PRINT));
-  }
-
-  public function getDestination(){
-    return realpath($this->destination);
-  }
-
-  public function setDestination($destination){
-    if(!is_dir($destination)){
-      throw new InvalidArgumentException();
-    } else if(!is_writable($destination)){
-      throw new InvalidArgumentException();
+    if(!isset($this->config->trackers[$torrent->getTracker()])){
+      throw new InvalidArgumentException("Unknown tracker '".$torrent->getTracker()."'");
     }
 
-    $this->destination = $destination;
+    $tracker = $this->config->trackers[$torrent->getTracker()];
+    $tracker->download($torrent, $tmp);
 
-    foreach($this->trackers as $key => $tracker){
-      $tracker->setDestination($destination);
-    }
-  }
+    $basename = $torrent->getName(true).'_'.$torrent->getTracker();
+    $basename = str_replace(['"', "'", '&', '/', '\\', '?', '#'], '_', $basename);
+    $basename = str_replace(' ', '.', $basename);
 
-  public function getTrackers(){
-    return $this->trackers;
+    rename($tmp, $this->config->getDestination().'/'.$basename.'.torrent');
   }
 
 }

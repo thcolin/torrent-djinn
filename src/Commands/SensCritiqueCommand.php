@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use thcolin\SensCritiqueAPI\Client;
 use thcolin\SensCritiqueAPI\Models\Artwork;
 use thcolin\SensCritiqueAPI\Models\Movie;
 use thcolin\SensCritiqueAPI\Models\TVShow;
@@ -37,6 +38,9 @@ class SensCritiqueCommand extends CommandAbstract{
     if(!$input->getOption('soft')){
       $this->hello();
     }
+
+    $this->senscritique = new Client();
+    $this->saved = json_decode(file_get_contents(__SAVE_FILE__), true);
 
     $order = $input->getOption('order');
     $anonymous = $input->getOption('anonymous');
@@ -140,6 +144,7 @@ class SensCritiqueCommand extends CommandAbstract{
 
   private function torrent($search){
     $this->output->writeln('');
+    // TODO : add `skip-tests` arg to `true`
     return $this->command('torrent', ['--soft' => true, 'search' => $search]);
   }
 

@@ -28,8 +28,12 @@ class Torrent{
     $this->uuid = $uuid;
   }
 
-  public function getName(){
-    return $this->name;
+  public function getName($cleanest = false){
+    if($cleanest){
+      return ($this->getRelease() ? $this->getRelease()->getTitle():$this->getName());
+    } else{
+      return $this->name;
+    }
   }
 
   public function setName($name){

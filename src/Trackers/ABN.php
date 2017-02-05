@@ -2,33 +2,34 @@
 
 namespace thcolin\TorrentDjinn\Trackers;
 
+use thcolin\TorrentDjinn\Browser;
 use thcolin\TorrentDjinn\Tracker;
 use thcolin\TorrentDjinn\Torrent;
 use thcolin\TorrentDjinn\TorrentCollection;
 use thcolin\TorrentDjinn\Exceptions\LoginException;
 use thcolin\SceneReleaseParser\Release;
 use jyggen\Curl\Request;
-use LogicException;
 use Exception;
 
-class ABN extends Tracker{
+class ABN{
+  use Tracker;
 
   const DOMAIN = 'https://abnormal.ws';
   const COOKIE_FILE = __DIR__.'/../../tmp/abn.cookie';
 
-  protected function login($credentials, $anonymous = false){
+  protected function login($anonymous = false){
     if(!is_file(self::COOKIE_FILE)){
       $request = new Request(self::DOMAIN.'/login.php');
 
       $request->setOption(CURLOPT_POST, true);
       $request->setOption(CURLOPT_COOKIEJAR, self::COOKIE_FILE);
       $request->setOption(CURLOPT_POSTFIELDS, [
-        'username' => $credentials['username'],
-        'password' => $credentials['password'],
+        'username' => $this->credentials['username'],
+        'password' => $this->credentials['password'],
         'login' => 'Connexion'
       ]);
 
-      $request = $this->call($request, Tracker::CALLBACK_REQUEST);
+      $request = $this->browser->call($request, Browser::CALLBACK_REQUEST);
       curl_close($request->getHandle());
     }
 
@@ -38,11 +39,12 @@ class ABN extends Tracker{
       throw new LoginException(__CLASS__, 'No session found in cookie file');
     }
 
-    $this->defaults[CURLOPT_COOKIEFILE] = self::COOKIE_FILE;
+    $this->browser->defaults[CURLOPT_COOKIEFILE] = self::COOKIE_FILE;
+  }
 
-    // test
+  protected function test(){
     $request = new Request(self::DOMAIN.'/');
-    $request = $this->call($request, Tracker::CALLBACK_REQUEST);
+    $request = $this->browser->call($request, Browser::CALLBACK_REQUEST);
 
     switch($request->getInfo(CURLINFO_HTTP_CODE)){
       case 200:
@@ -54,14 +56,14 @@ class ABN extends Tracker{
     }
   }
 
-  public function search($q){
+  protected function search($q){
     $collection = new TorrentCollection();
     $page = 1;
     $end = false;
 
     do{
       $request = new Request(self::DOMAIN.'/torrents.php?search='.urlencode($q).'&page='.$page++);
-      $document = $this->call($request, Tracker::CALLBACK_DOCUMENT);
+      $document = $this->browser->call($request, Browser::CALLBACK_DOCUMENT);
 
       foreach($document->find('.torrent_table tr') as $element){
         if(in_array('colhead', explode(' ', $element->attr('class')))){
@@ -102,9 +104,9 @@ class ABN extends Tracker{
     return $collection;
   }
 
-  public function download(Torrent $torrent, $tmp){
+  protected function download(Torrent $torrent, $tmp){
     $request = new Request(self::DOMAIN.'/torrents.php?action=download&id='.$torrent->getUUID()['id'].'&authkey='.$torrent->getUUID()['key'].'&torrent_pass='.$torrent->getUUID()['pass']);
-    $this->call($request, Tracker::CALLBACK_FILE, [
+    $this->browser->call($request, Browser::CALLBACK_FILE, [
       CURLOPT_FILE => $tmp
     ]);
   }

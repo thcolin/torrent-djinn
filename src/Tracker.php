@@ -1,83 +1,70 @@
 <?php
 
 namespace thcolin\TorrentDjinn;
-use DiDom\Document;
 
-abstract class Tracker{
+trait Tracker{
 
-  const CALLBACK_REQUEST = 0;
-  const CALLBACK_HTML = 1;
-  const CALLBACK_DOCUMENT = 2;
-  const CALLBACK_JSON = 4;
-  const CALLBACK_FILE = 8;
+  public $class;
+  public $browser;
 
-  protected $defaults = [];
+  protected $enable = true;
+  protected $credentials;
+
+  private $logged = false;
+  private $methods = ['test', 'search', 'download'];
 
   public function __construct($credentials){
-    $this->login($credentials);
+    $this->setCredentials($credentials);
+
     $explode = explode('\\', get_called_class());
     $this->class = end($explode);
+
+    $this->browser = new Browser();
   }
 
-  abstract protected function login($credentials);
-
-  abstract public function search($q);
-
-  abstract public function download(Torrent $torrent, $tmp);
-
-  protected function call(&$request, $callback = self::CALLBACK_HTML, $options = []){
-    foreach($this->defaults as $option => $value){
-      $request->setOption($option, $value);
+  public function __call($method, $args){
+    if(!in_array($method, $this->methods)){
+      return;
     }
 
-    foreach($options as $option => $value){
-      switch($option){
-        case CURLOPT_FILE:
-          $destination = $value;
-          $fp = fopen($destination, 'w+');
-          $tmp = tmpfile();
-          $value = $tmp;
-        break;
-      }
-
-      $request->setOption($option, $value);
+    if(!$this->logged){
+      $this->login();
+      $this->logged = true;
     }
 
-    $request->execute();
-
-    switch($callback){
-      case self::CALLBACK_HTML :
-        $raw = substr($request->getRawResponse(), $request->getInfo(CURLINFO_HEADER_SIZE));
-        return $raw;
-      break;
-      case self::CALLBACK_DOCUMENT :
-        $raw = substr($request->getRawResponse(), $request->getInfo(CURLINFO_HEADER_SIZE));
-        $document = new Document($raw);
-        return $document;
-      break;
-      case self::CALLBACK_JSON :
-        $raw = substr($request->getRawResponse(), $request->getInfo(CURLINFO_HEADER_SIZE));
-        $json = json_decode($raw, true);
-        $json = $json ? $json:[];
-        return $json;
-      break;
-      case self::CALLBACK_FILE :
-        fseek($tmp, $request->getInfo(CURLINFO_HEADER_SIZE));
-
-        while(!feof($tmp)){
-          fwrite($fp, fread($tmp, 8192));
-        }
-
-        fclose($fp);
-        fclose($tmp);
-
-        return $destination;
-      break;
-      default :
-        return $request;
-      break;
-    }
+    return call_user_func_array(array($this, $method), $args);
   }
+
+  public function serialize(){
+    return [
+      'enable' => $this->enable,
+      'credentials' => $this->credentials
+    ];
+  }
+
+  public function isEnable(){
+    return !!$this->enable;
+  }
+
+  public function setEnable($bool){
+    $this->enable = !!$bool;
+  }
+
+  public function getCredentials(){
+    return $this->credentials;
+  }
+
+  public function setCredentials($credentials){
+    $this->credentials = $credentials;
+  }
+
+  abstract protected function login();
+
+  abstract protected function test();
+
+  abstract protected function search($q);
+
+  abstract protected function download(Torrent $torrent, $tmp);
 
 }
 

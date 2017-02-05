@@ -8,17 +8,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use thcolin\TorrentDjinn\Djinn;
-use thcolin\SensCritiqueAPI\Client;
+use thcolin\TorrentDjinn\Exceptions\LoginException;
+use thcolin\TorrentDjinn\Exceptions\JSONUnvalidException;
 
 abstract class CommandAbstract extends ContainerAwareCommand{
 
   protected function init(InputInterface $input, OutputInterface $output){
     $this->input = $input;
     $this->output = $output;
-
-    $this->djinn = new Djinn(__CONFIG_FILE__);
-    $this->senscritique = new Client();
-    $this->saved = json_decode(file_get_contents(__SAVE_FILE__), true);
   }
 
   protected function command($name, $args = [], $options = []){
@@ -30,13 +27,13 @@ abstract class CommandAbstract extends ContainerAwareCommand{
   protected function hello(){
     switch($this->getName()){
       case 'torrent':
-        $talent = 'You requested my talents for searching torrents on : <fg=cyan>Trackers</>';
+        $talent = 'You requested my talents for searching torrents on : <question>Trackers</question>';
       break;
       case 'senscritique':
-        $talent = 'You requested my talents for searching artworks on : <fg=cyan>SensCritique</>';
+        $talent = 'You requested my talents for searching artworks on : <question>SensCritique</question>';
       break;
       default:
-        $talent = 'You requested my talents to <fg=green>configure</> myself !';
+        $talent = 'You requested my talents to <question>configure</question> myself !';
       break;
     }
 
@@ -46,9 +43,9 @@ abstract class CommandAbstract extends ContainerAwareCommand{
                <fg=red>:::</><fg=blue>???</><fg=red>:::,</>
                 <fg=red>:</><fg=blue>?????</><fg=blue>:</>                 ".$talent."
                 <fg=blue>,?????,</>
-                <fg=blue>,?????,</>                 By the way, I'm configured like this :
-           <fg=blue>:???=~,,,,,~=???=</>              -- The torrents will be downloaded to : <fg=yellow>".$this->djinn->getDestination()."</>
-       <fg=blue>+????++++++????+===+?????</>          -- And I can search on all these trackers : <fg=magenta>".implode(', ', array_keys($this->djinn->getTrackers()))."</>
+                <fg=blue>,?????,</>
+           <fg=blue>:???=~,,,,,~=???=</>
+       <fg=blue>+????++++++????+===+?????</>
      <fg=blue>????????++++?????????????????</>
     <fg=blue>??????????????=++??????????????</>
      <fg=blue>???????????==???=????????????</>

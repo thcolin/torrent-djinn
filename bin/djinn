@@ -7,6 +7,7 @@ use Symfony\Component\Console\Application as Console;
 use thcolin\TorrentDjinn\Commands\ConfigCommand;
 use thcolin\TorrentDjinn\Commands\TorrentCommand;
 use thcolin\TorrentDjinn\Commands\SensCritiqueCommand;
+use thcolin\TorrentDjinn\Exceptions\JSONUnvalidException;
 
 define('__CONFIG_DEFAULT_FILE__', __DIR__.'/../config.default.json');
 define('__CONFIG_FILE__', __DIR__.'/../config.json');
@@ -15,6 +16,10 @@ define('__TMP__', __DIR__.'/../tmp');
 
 if(!is_file(__CONFIG_FILE__)){
   copy(__CONFIG_DEFAULT_FILE__, __CONFIG_FILE__);
+}
+
+if(!is_file(__CONFIG_FILE__)){
+  throw new JSONUnvalidException("JSON config file doesn't exist : ".__CONFIG_FILE__);
 }
 
 if(!is_dir(__TMP__)){
