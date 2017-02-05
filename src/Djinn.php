@@ -63,11 +63,11 @@ class Djinn{
   public function download(Torrent $torrent){
     $tmp = tempnam('/tmp', time());
 
-    if(!isset($this->config->trackers[$torrent->getTracker()])){
+    if(!isset($this->config->getTrackers()[$torrent->getTracker()])){
       throw new InvalidArgumentException("Unknown tracker '".$torrent->getTracker()."'");
     }
 
-    $tracker = $this->config->trackers[$torrent->getTracker()];
+    $tracker = $this->config->getTrackers()[$torrent->getTracker()];
     $tracker->download($torrent, $tmp);
 
     $basename = $torrent->getName(true).'_'.$torrent->getTracker();
