@@ -74,7 +74,8 @@ class Djinn{
     $basename = str_replace(['"', "'", '&', '/', '\\', '?', '#'], '_', $basename);
     $basename = str_replace(' ', '.', $basename);
 
-    rename($tmp, $this->config->getDestination().'/'.$basename.'.torrent');
+    copy($tmp, $this->config->getDestination().'/'.$basename.'.torrent');
+    unlink($tmp);
   }
 
 }
