@@ -30,7 +30,7 @@ class Torrent{
 
   public function getName($cleanest = false){
     if($cleanest){
-      return ($this->getRelease() ? $this->getRelease()->getTitle():$this->getName());
+      return ($this->getRelease() ? $this->getRelease()->getRelease(Release::GENERATED_RELEASE):$this->getName());
     } else{
       return $this->name;
     }
