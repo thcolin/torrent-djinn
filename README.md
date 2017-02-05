@@ -137,12 +137,11 @@ Download this artwork ? [Y/n]
 If yes, you will be redirected to torrent command with the title of the artwork as ```search``` argument. You can cancel the command within it.
 
 ## TODO
-* Handle environment (macOS, linux...)
 * Update README with new features (clean, policy, relevance...)
 * Set all message to english
 * Do tell the djinn more things on `hello()` function
 * Add logs & level (mainly debug)
-* Order senscritique artworks
+* Order senscritique artworks (by others params than last action, like year...)
 * Show only senscritique `wishes`
   * Add filter to senscritique-api
 * Make tests on Djinn class mainly
