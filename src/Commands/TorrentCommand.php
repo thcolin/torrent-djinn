@@ -12,6 +12,7 @@ use thcolin\TorrentDjinn\Commands\CommandAbstract;
 use thcolin\TorrentDjinn\Exceptions\LoginException;
 use thcolin\TorrentDjinn\Exceptions\JSONUnvalidException;
 use thcolin\SceneReleaseParser\Release;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
@@ -54,15 +55,35 @@ class TorrentCommand extends CommandAbstract{
 
     if(!$input->getOption('skip-tests')){
       foreach($this->djinn->getConfig()->getTrackers() as $key => $tracker){
-        $this->output->write('Trying to connect to <question>'.$key.'</question> : ');
+        $progressBar = new ProgressBar($this->output, 100);
+        $progressBar->setFormatDefinition('custom', 'Trying to connect to <question>'.$key.'</question> : %message%');
+        $progressBar->setFormat('custom');
+
+        $progressBar->setMessage('<fg=cyan>Connecting..</>');
+        $progressBar->start();
+        usleep(200);
 
         try{
           $tracker->test();
-          $this->output->writeln('<fg=green>success</>');
+          $progressBar->setMessage('<fg=green>success</>');
         } catch(LoginException $e){
           $tracker->setEnable(false);
-          $this->output->writeln('<fg=red>fail</>');
+          $progressBar->setMessage('<fg=red>fail</>');
         }
+
+        // retry login
+        if(!$tracker->isEnable()){
+          try{
+            $tracker->test();
+            $progressBar->setMessage('<fg=green>success</>');
+          } catch(LoginException $e){
+            $tracker->setEnable(false);
+            $progressBar->setMessage('<fg=red>fail</>');
+          }
+        }
+
+        $progressBar->finish();
+        $output->writeln('');
       }
     }
 
