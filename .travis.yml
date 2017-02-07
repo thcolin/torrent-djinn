@@ -8,3 +8,7 @@ php:
 branches:
   only:
   - tests
+
+install:
+  - composer install
+
