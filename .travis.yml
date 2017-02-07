@@ -10,3 +10,9 @@ branches:
 install:
   - composer install
 
+addons:
+  code_climate:
+    repo_token: 36bd89306473f2481004223d362a2977131e0bcaba7e27cd6add5b9f37f5634f
+
+after_success:
+  - vendor/bin/test-reporter
