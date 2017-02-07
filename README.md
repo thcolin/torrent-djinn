@@ -1,6 +1,6 @@
 # Torrent Djinn
 
-[![Build Status](https://travis-ci.org/thcolin/torrent-djinn.svg?branch=tests)](https://travis-ci.org/thcolin/torrent-djinn)
+[![Build Status](https://travis-ci.org/thcolin/torrent-djinn.svg?branch=master)](https://travis-ci.org/thcolin/torrent-djinn)
 [![Code Climate](https://codeclimate.com/github/thcolin/torrent-djinn/badges/gpa.svg)](https://codeclimate.com/github/thcolin/torrent-djinn)
 [![Test Coverage](https://codeclimate.com/github/thcolin/torrent-djinn/badges/coverage.svg)](https://codeclimate.com/github/thcolin/torrent-djinn/coverage)
 
