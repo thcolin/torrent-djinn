@@ -99,7 +99,7 @@ class TorrentCollectionTest extends PHPUnit_Framework_TestCase{
     $collection = new TorrentCollection();
     $collection->torrents = $this->torrents;
 
-    $this->assertCount(3, $collection->filter('Inception', 'strict', [], 'seeders:desc'));
+    $this->assertCount(2, $collection->filter('Inception', 'strict', [], 'seeders:desc'));
   }
 
 }
